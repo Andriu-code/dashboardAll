@@ -1,0 +1,73 @@
+.tableWrapper
+  width: 100%
+  overflow-x: auto
+
+.table
+  width: 100%
+  border-collapse: collapse
+  font-family: 'Arial', sans-serif
+
+  th, td
+    padding: 0.75rem 1rem
+    text-align: left
+    border-bottom: 1px solid #ddd
+
+  th
+    background: #f4f4f4
+    font-weight: 600
+
+  tr:hover
+    background: #f9f9f9
+
+  button
+    margin-right: 0.5rem
+    padding: 0.3rem 0.6rem
+    border-radius: 4px
+    border: none
+    cursor: pointer
+    font-size: 0.8rem
+
+.viewBtn
+  background-color: #3498db
+  color: white
+  &:hover
+    background-color: #2980b9
+
+.editBtn
+  background-color: #f1c40f
+  color: white
+  &:hover
+    background-color: #d4ac0d
+
+.deleteBtn
+  background-color: #e74c3c
+  color: white
+  &:hover
+    background-color: #c0392b
+
+.status
+  padding: 0.3rem 0.6rem
+  border-radius: 12px
+  font-weight: bold
+  text-transform: uppercase
+  font-size: 0.75rem
+
+.status.Pendiente
+  background-color: #f39c12
+  color: white
+
+.status.Completado
+  background-color: #27ae60
+  color: white
+
+.status.Cancelado
+  background-color: #e74c3c
+  color: white
+
+@media (max-width: 768px)
+  th, td
+    padding: 0.5rem 0.75rem
+    font-size: 0.8rem
+  button
+    font-size: 0.7rem
+    padding: 0.2rem 0.4rem

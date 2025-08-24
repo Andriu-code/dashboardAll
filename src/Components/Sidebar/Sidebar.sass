@@ -1,0 +1,69 @@
+.sidebar
+  width: 250px
+  background: #cabfde
+  color: #fff
+  height: 100vh
+  padding-top: 1rem
+  position: fixed
+  top: 60px // altura navbar
+  left: 0
+  transition: all 0.3s ease
+  z-index: 900
+
+  nav
+    ul
+      list-style: none
+      padding: 0
+      margin: 0
+
+      li
+        a
+          display: flex
+          align-items: center
+          gap: 1rem
+          padding: 0.75rem 1rem
+          color: #000
+          text-decoration: none
+          font-weight: 500
+          border-radius: 4px
+          transition: background 0.2s
+
+          &:hover
+            background: #957DAD
+
+      .active
+        background: #957DAD
+        color: #fff
+
+  &.closed
+    transform: translateX(-100%)
+
+  &.open
+    transform: translateX(0)
+
+.mobileToggle
+  display: none
+  position: fixed
+  top: 15px
+  left: 15px
+  z-index: 1001
+  background: #cabfde
+  border: none
+  color: #fff
+  padding: 0.5rem
+  border-radius: 4px
+  cursor: pointer
+
+  &:hover
+    background: #cabfde
+
+// Responsive
+@media (max-width: 768px)
+  .sidebar
+    top: 50px
+    height: calc(100vh - 50px)
+    position: fixed
+    z-index: 900
+
+  .mobileToggle
+    display: block
