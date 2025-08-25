@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import Table from '../../Components/Table/Table';
 import ModalForm from '../../Components/ModalForm/ModalForm';
 import "./productos.sass"
@@ -14,7 +14,14 @@ const columns = [
     { key: "specs", label: "Especificaciones" },
 ];
 
-const productFields = [
+type Field = {
+    name: string;
+    label: string;
+    type?: "text" | "number" | "textarea" | "select";
+    options?: string[];
+};
+
+const productFields: Field[] = [
     { name: "name", label: "Nombre del producto", type: "text" },
     { name: "price", label: "Precio", type: "number" },
     { name: "category", label: "Categoría", type: "select", options: ["Bebida", "Snack", "Accesorio"] },
@@ -24,7 +31,7 @@ const productFields = [
 function Productos() {
     const [isModalOpen, setIsModalOpen] = useState(false);
 
-    const handleProductSubmit = (data: Record<string, any>) => {
+    const handleProductSubmit = (data: Record<string, unknown>) => {
         console.log("Producto guardado:", data);
     };
 

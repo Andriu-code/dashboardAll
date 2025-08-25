@@ -1,4 +1,4 @@
-import React from 'react'
+
 import Home from "./Pages/Home"
 import Pedidos from "./Pages/Pedidos"
 import Productos from "./Pages/Productos"

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import Table from '../../Components/Table/Table';
 import "./../Productos/productos.sass"
 import ModalForm from '../../Components/ModalForm/ModalForm';
@@ -15,7 +15,14 @@ const orderColumns = [
     { key: "status", label: "Estado" },
 ];
 
-const orderFields = [
+type Field = {
+    name: string;
+    label: string;
+    type?: "text" | "number" | "select" | "textarea";
+    options?: string[];
+};
+
+const orderFields: Field[] = [
     { name: "customerName", label: "Nombre del cliente", type: "text" },
     { name: "product", label: "Producto", type: "select", options: ["Café", "Té", "Pastelito"] },
     { name: "quantity", label: "Cantidad", type: "number" },
@@ -26,7 +33,7 @@ const orderFields = [
 function Pedidos() {
     const [isModalOpen, setIsModalOpen] = useState(false);
 
-    const handleOrderSubmit = (data: Record<string, any>) => {
+    const handleOrderSubmit = (data: Record<string, unknown>) => {
         console.log("Pedido guardado:", data);
     };
     return (

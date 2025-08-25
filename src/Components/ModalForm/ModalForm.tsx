@@ -5,16 +5,16 @@ type Field = {
     name: string;
     label: string;
     type?: "text" | "number" | "select" | "textarea";
-    options?: string[]; // para selects
+    options?: string[];
 };
 
 type ModalFormProps = {
     isOpen: boolean;
     onClose: () => void;
-    onSubmit: (data: Record<string, any>) => void;
+    onSubmit: (data: Record<string, unknown>) => void;
     title: string;
     fields: Field[];
-    initialData?: Record<string, any>;
+    initialData?: Record<string, unknown>;
 };
 
 const ModalForm: React.FC<ModalFormProps> = ({
@@ -25,13 +25,15 @@ const ModalForm: React.FC<ModalFormProps> = ({
     fields,
     initialData = {},
 }) => {
-    const [formData, setFormData] = useState<Record<string, any>>(initialData);
+    const [formData, setFormData] = useState<Record<string, string>>(
+        (initialData as Record<string, string>) || {}
+    );
 
     useEffect(() => {
-        setFormData(initialData);
+        setFormData((initialData as Record<string, string>) || {});
     }, [initialData]);
 
-    const handleChange = (name: string, value: any) => {
+    const handleChange = (name: string, value: string) => {
         setFormData((prev) => ({ ...prev, [name]: value }));
     };
 
@@ -50,9 +52,11 @@ const ModalForm: React.FC<ModalFormProps> = ({
                 <form onSubmit={handleSubmit}>
                     {fields.map((field) => (
                         <div className="formGroup" key={field.name}>
-                            <label>{field.label}</label>
+                            <label htmlFor={field.name}>{field.label}</label>
+
                             {field.type === "select" ? (
                                 <select
+                                    id={field.name}
                                     value={formData[field.name] || ""}
                                     onChange={(e) => handleChange(field.name, e.target.value)}
                                 >
@@ -65,11 +69,13 @@ const ModalForm: React.FC<ModalFormProps> = ({
                                 </select>
                             ) : field.type === "textarea" ? (
                                 <textarea
+                                    id={field.name}
                                     value={formData[field.name] || ""}
                                     onChange={(e) => handleChange(field.name, e.target.value)}
                                 />
                             ) : (
                                 <input
+                                    id={field.name}
                                     type={field.type || "text"}
                                     value={formData[field.name] || ""}
                                     onChange={(e) => handleChange(field.name, e.target.value)}
@@ -77,6 +83,7 @@ const ModalForm: React.FC<ModalFormProps> = ({
                             )}
                         </div>
                     ))}
+
                     <div className="buttons">
                         <button type="submit" className="submitBtn">
                             Guardar
@@ -89,6 +96,7 @@ const ModalForm: React.FC<ModalFormProps> = ({
             </div>
         </div>
     );
+
 };
 
 export default ModalForm;
