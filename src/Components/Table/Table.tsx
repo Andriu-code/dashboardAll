@@ -33,9 +33,15 @@ const Table = <T extends Row>({ columns, data, onView, onEdit, onDelete }: Table
                             {columns.map((col) => (
                                 <td key={col.key}>
                                     {col.key === "status" ? (
-                                        <span className={`${"status"} ${[row[col.key]]}`}>
+                                        <span className={`status ${row[col.key]}`}>
                                             {row[col.key]}
                                         </span>
+                                    ) : col.key === "image" ? ( // 🔹 Si es columna de imagen
+                                        <img
+                                            src={row[col.key] as string} // asumimos que es URL
+                                            alt="Imagen"
+                                            style={{ width: "50px", height: "50px", objectFit: "cover", borderRadius: "4px" }}
+                                        />
                                     ) : (
                                         row[col.key]
                                     )}
@@ -43,26 +49,17 @@ const Table = <T extends Row>({ columns, data, onView, onEdit, onDelete }: Table
                             ))}
                             <td>
                                 {onView && (
-                                    <button
-                                        className="viewBtn"
-                                        onClick={() => onView(row)}
-                                    >
+                                    <button className="viewBtn" onClick={() => onView(row)}>
                                         Ver
                                     </button>
                                 )}
                                 {onEdit && (
-                                    <button
-                                        className="editBtn"
-                                        onClick={() => onEdit(row)}
-                                    >
+                                    <button className="editBtn" onClick={() => onEdit(row)}>
                                         Editar
                                     </button>
                                 )}
                                 {onDelete && (
-                                    <button
-                                        className="deleteBtn"
-                                        onClick={() => onDelete(row)}
-                                    >
+                                    <button className="deleteBtn" onClick={() => onDelete(row)}>
                                         Eliminar
                                     </button>
                                 )}
@@ -74,5 +71,6 @@ const Table = <T extends Row>({ columns, data, onView, onEdit, onDelete }: Table
         </div>
     );
 };
+
 
 export default Table;

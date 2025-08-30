@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import { useForm, Controller } from "react-hook-form";
 import "./ModalForm.sass";
 
 type Field = {
     name: string;
     label: string;
-    type?: "text" | "number" | "select" | "textarea";
+    type?: "text" | "number" | "select" | "textarea" | "file";
     options?: string[];
 };
 
@@ -25,21 +26,39 @@ const ModalForm: React.FC<ModalFormProps> = ({
     fields,
     initialData = {},
 }) => {
-    const [formData, setFormData] = useState<Record<string, string>>(
-        (initialData as Record<string, string>) || {}
-    );
+    const { handleSubmit, control, reset, watch } = useForm({
+        defaultValues: initialData,
+    });
 
+    const [preview, setPreview] = useState<Record<string, string>>({});
+
+    const watchedFiles = watch(); // ver los cambios en los inputs
+
+    // Reseteamos el formulario cuando cambie initialData
     useEffect(() => {
-        setFormData((initialData as Record<string, string>) || {});
-    }, [initialData]);
+        reset(initialData);
+    }, [initialData, reset]);
 
-    const handleChange = (name: string, value: string) => {
-        setFormData((prev) => ({ ...prev, [name]: value }));
-    };
+    // Actualizar previsualización de imágenes
+    useEffect(() => {
+        const newPreview: Record<string, string> = {};
+        fields.forEach((field) => {
+            if (field.type === "file" && watchedFiles[field.name]) {
+                const file = watchedFiles[field.name] as File;
+                newPreview[field.name] = URL.createObjectURL(file);
+            }
+        });
+        setPreview(newPreview);
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        onSubmit(formData);
+        // Limpiar URLs al desmontar o cambiar archivo
+        return () => {
+            Object.values(newPreview).forEach((url) => URL.revokeObjectURL(url));
+        };
+    }, [watchedFiles, fields]);
+
+    const submitHandler = (data: Record<string, unknown>) => {
+        // data[field.name] -> File para campos de tipo file
+        onSubmit(data);
         onClose();
     };
 
@@ -49,38 +68,62 @@ const ModalForm: React.FC<ModalFormProps> = ({
         <div className="modalOverlay">
             <div className="modalCard">
                 <h2>{title}</h2>
-                <form onSubmit={handleSubmit}>
+                <form onSubmit={handleSubmit(submitHandler)}>
                     {fields.map((field) => (
                         <div className="formGroup" key={field.name}>
                             <label htmlFor={field.name}>{field.label}</label>
 
-                            {field.type === "select" ? (
-                                <select
-                                    id={field.name}
-                                    value={formData[field.name] || ""}
-                                    onChange={(e) => handleChange(field.name, e.target.value)}
-                                >
-                                    <option value="">Seleccione</option>
-                                    {field.options?.map((opt) => (
-                                        <option key={opt} value={opt}>
-                                            {opt}
-                                        </option>
-                                    ))}
-                                </select>
-                            ) : field.type === "textarea" ? (
-                                <textarea
-                                    id={field.name}
-                                    value={formData[field.name] || ""}
-                                    onChange={(e) => handleChange(field.name, e.target.value)}
-                                />
-                            ) : (
-                                <input
-                                    id={field.name}
-                                    type={field.type || "text"}
-                                    value={formData[field.name] || ""}
-                                    onChange={(e) => handleChange(field.name, e.target.value)}
-                                />
-                            )}
+                            <Controller
+                                name={field.name}
+                                control={control}
+                                defaultValue={initialData[field.name] || ""}
+                                render={({ field: controllerField }) => {
+                                    if (field.type === "select") {
+                                        return (
+                                            <select {...controllerField} id={field.name} value={controllerField.value as string}>
+                                                <option value="">Seleccione</option>
+                                                {field.options?.map((opt) => (
+                                                    <option key={opt} value={opt}>
+                                                        {opt}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        );
+                                    }
+
+                                    if (field.type === "textarea") {
+                                        return (
+                                            <textarea
+                                                {...controllerField}
+                                                id={field.name}
+                                                value={controllerField.value as string}
+                                            />
+                                        );
+                                    }
+
+                                    if (field.type === "file") {
+                                        return (
+                                            <>
+                                                <input
+                                                    type="file"
+                                                    id={field.name}
+                                                    accept="image/*"
+                                                    onChange={(e) => controllerField.onChange(e.target.files?.[0])}
+                                                />
+                                                {preview[field.name] && (
+                                                    <img
+                                                        src={preview[field.name]}
+                                                        alt="Preview"
+                                                        style={{ marginTop: "0.5rem", maxHeight: "150px", borderRadius: "8px" }}
+                                                    />
+                                                )}
+                                            </>
+                                        );
+                                    }
+
+                                    return <input {...controllerField} id={field.name} value={controllerField.value as string} />;
+                                }}
+                            />
                         </div>
                     ))}
 
@@ -96,7 +139,6 @@ const ModalForm: React.FC<ModalFormProps> = ({
             </div>
         </div>
     );
-
 };
 
 export default ModalForm;
